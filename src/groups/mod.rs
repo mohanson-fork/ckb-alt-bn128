@@ -1,5 +1,5 @@
 use crate::arith::U256;
-use crate::fields::{const_fq, fq2_nonresidue, FieldElement, Fq, Fq12, Fq2, Fr};
+use crate::fields::{FieldElement, Fq, Fq2, Fq12, Fr, const_fq, fq2_nonresidue};
 use core::{
     fmt,
     ops::{Add, Mul, Neg, Sub},

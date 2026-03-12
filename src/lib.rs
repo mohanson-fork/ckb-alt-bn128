@@ -510,17 +510,9 @@ impl G2 {
         let y_gt = y.0.to_u512() > y_neg.0.to_u512();
 
         let e_y = if sign == 10 {
-            if y_gt {
-                y_neg
-            } else {
-                y
-            }
+            if y_gt { y_neg } else { y }
         } else if sign == 11 {
-            if y_gt {
-                y
-            } else {
-                y_neg
-            }
+            if y_gt { y } else { y_neg }
         } else {
             return Err(CurveError::InvalidEncoding);
         };
