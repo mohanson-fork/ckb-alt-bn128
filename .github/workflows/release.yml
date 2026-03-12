@@ -18,9 +18,6 @@ jobs:
       run: |
         sudo apt -y install clang-20
         rustup target add riscv64imac-unknown-none-elf
-        wget https://github.com/nervosnetwork/ckb-standalone-debugger/releases/download/v1.0.0/ckb-debugger_v1.0.0_x86_64-unknown-linux-gnu.tar.gz
-        tar -xzf ckb-debugger_v1.0.0_x86_64-unknown-linux-gnu.tar.gz
-        echo ${{ github.workspace }} >> ${{ github.path }}
     - uses: rust-lang/crates-io-auth-action@v1
       id: auth
     - run: cargo publish
