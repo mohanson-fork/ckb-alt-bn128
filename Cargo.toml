@@ -1,0 +1,22 @@
+[package]
+name = "ckb-alt-bn128"
+version = "0.1.0"
+edition = "2024"
+authors = ["Sean Bowe <ewillbefull@gmail.com>", "Parity Technologies <admin@parity.io>", "Mohanson <mohanson@outlook.com>"]
+description = "Pairing cryptography with the Barreto-Naehrig curve"
+keywords = ["pairing", "crypto", "cryptography"]
+homepage = "https://github.com/mohanson-fork/bn"
+repository = "https://github.com/mohanson-fork/bn"
+license = "MIT OR Apache-2.0"
+
+[profile.release]
+opt-level = "s"
+lto = "fat"
+
+[dependencies]
+byteorder = { version = "1.0", features = ["i128"], default-features = false }
+crunchy = "0.2.1"
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+
+[build-dependencies]
+cc = "1"

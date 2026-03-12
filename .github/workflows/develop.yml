@@ -1,0 +1,23 @@
+name: develop
+
+on:
+  pull_request:
+  push:
+
+jobs:
+
+  develop:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Setup
+        run: |
+          sudo apt -y install clang-20
+          rustup target add riscv64imac-unknown-none-elf
+          wget https://github.com/nervosnetwork/ckb-standalone-debugger/releases/download/v1.0.0/ckb-debugger_v1.0.0_x86_64-unknown-linux-gnu.tar.gz
+          tar -xzf ckb-debugger_v1.0.0_x86_64-unknown-linux-gnu.tar.gz
+          echo ${{ github.workspace }} >> ${{ github.path }}
+      - name: Build
+        run: |
+          make all
