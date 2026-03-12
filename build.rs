@@ -2,7 +2,7 @@ fn find_clang() -> String {
     if let Ok(clang) = std::env::var("CLANG") {
         return clang;
     }
-    for version in (19..=21).rev() {
+    for version in [22, 21, 20, 19, 30, 29, 28, 27, 26, 25, 24, 23] {
         let clang = format!("clang-{}", version);
         if std::process::Command::new(&clang)
             .arg("--version")
@@ -12,7 +12,16 @@ fn find_clang() -> String {
             return clang;
         }
     }
-    "clang".to_string()
+    if std::process::Command::new("clang")
+        .arg("--version")
+        .output()
+        .is_ok()
+    {
+        return "clang".to_string();
+    }
+    panic!(
+        "Clang compiler not found. Please set the CLANG environment variable to the path of your clang executable."
+    );
 }
 
 fn main() {
