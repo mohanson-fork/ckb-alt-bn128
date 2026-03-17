@@ -5,13 +5,15 @@ edition = "2024"
 authors = ["Sean Bowe <ewillbefull@gmail.com>", "Parity Technologies <admin@parity.io>", "Mohanson <mohanson@outlook.com>"]
 description = "Pairing cryptography with the Barreto-Naehrig curve"
 keywords = ["pairing", "crypto", "cryptography"]
-homepage = "https://github.com/mohanson-fork/bn"
-repository = "https://github.com/mohanson-fork/bn"
+homepage = "https://github.com/mohanson-fork/ckb-alt-bn128"
+repository = "https://github.com/mohanson-fork/ckb-alt-bn128"
 license = "MIT OR Apache-2.0"
 
 [profile.release]
-opt-level = "s"
-lto = "fat"
+overflow-checks = true
+strip = false
+codegen-units = 1
+debug = true
 
 [dependencies]
 byteorder = { version = "1.0", features = ["i128"], default-features = false }
