@@ -11,7 +11,7 @@ macro_rules! field_impl {
     ($name:ident, $modulus:expr, $rsquared:expr, $rcubed:expr, $one:expr, $inv:expr) => {
         #[derive(Copy, Clone, Default, PartialEq, Eq, Debug)]
         #[repr(C)]
-        pub struct $name(U256);
+        pub struct $name(pub U256);
 
         impl From<$name> for U256 {
             #[inline]
@@ -231,33 +231,27 @@ field_impl!(
     0x9ede7d651eca6ac987d20782e4866389
 );
 
-lazy_static::lazy_static! {
-
-    static ref FQ: U256 = U256([
-        0x97816a916871ca8d3c208c16d87cfd47,
-        0x30644e72e131a029b85045b68181585d
-    ]);
-
-    pub static ref FQ_MINUS3_DIV4: Fq =
-        Fq::new(3.into()).expect("3 is a valid field element and static; qed").neg() *
-        Fq::new(4.into()).expect("4 is a valid field element and static; qed").inverse()
-            .expect("4 has inverse in Fq and is static; qed");
-
-    static ref FQ_MINUS1_DIV2: Fq =
-        Fq::new(1.into()).expect("1 is a valid field element and static; qed").neg() *
-        Fq::new(2.into()).expect("2 is a valid field element and static; qed").inverse()
-            .expect("2 has inverse in Fq and is static; qed");
-
-}
+pub static FQ: U256 = U256([
+    0x97816a916871ca8d3c208c16d87cfd47,
+    0x30644e72e131a029b85045b68181585d,
+]);
+pub static FQ_MINUS3_DIV4: Fq = Fq(U256([
+    0x5e05aa45a1c72a34f082305b61f3f51c,
+    0x019139cb84c680a6e14116da06056176,
+]));
+pub static FQ_MINUS1_DIV2: Fq = Fq(U256([
+    0xc6843fb439555fa7b461a4448976f7d5,
+    0x112ceb58a394e07d28f0d12384840918,
+]));
 
 impl Fq {
     pub fn sqrt(&self) -> Option<Self> {
-        let a1 = self.pow(*FQ_MINUS3_DIV4);
+        let a1 = self.pow(FQ_MINUS3_DIV4);
         let a1a = a1 * *self;
         let a0 = a1 * (a1a);
 
-        let mut am1 = *FQ;
-        am1.sub(&1.into(), &*FQ);
+        let mut am1 = FQ;
+        am1.sub(&1.into(), &FQ);
 
         if a0 == Fq::new(am1).unwrap() {
             None
