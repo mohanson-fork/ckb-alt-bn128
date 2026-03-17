@@ -1,5 +1,5 @@
 use crate::arith::U256;
-use crate::fields::{FieldElement, Fq, Fq2, Fq12, Fr, const_fq, fq2_nonresidue};
+use crate::fields::{FieldElement, Fq, Fq2, Fq12, Fr, const_fq};
 use core::{
     fmt,
     ops::{Add, Mul, Neg, Sub},
@@ -475,11 +475,6 @@ pub type G2 = G<G2Params>;
 pub type AffineG2 = AffineG<G2Params>;
 
 #[inline]
-fn twist() -> Fq2 {
-    fq2_nonresidue()
-}
-
-#[inline]
 fn two_inv() -> Fq {
     const_fq([
         9781510331150239090,
@@ -675,7 +670,7 @@ impl G2 {
         self.z = self.z * h;
 
         EllCoeffs {
-            ell_0: twist() * (e * base.x - d * base.y),
+            ell_0: (e * base.x - d * base.y).mul_by_nonresidue(),
             ell_vv: e.neg(),
             ell_vw: d,
         }
@@ -699,7 +694,7 @@ impl G2 {
         self.z = b * h;
 
         EllCoeffs {
-            ell_0: twist() * i,
+            ell_0: i.mul_by_nonresidue(),
             ell_vw: h.neg(),
             ell_vv: j + j + j,
         }
