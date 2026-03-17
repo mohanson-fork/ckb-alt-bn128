@@ -1,5 +1,4 @@
 use core::cmp::Ordering;
-use crunchy::unroll;
 
 /// 256-bit, stack allocated biginteger for use in prime field
 /// arithmetic.
@@ -45,30 +44,24 @@ impl U512 {
         let mut res = [0; 4];
 
         debug_assert_eq!(c1.0.len(), 2);
-        unroll! {
-            for i in 0..2 {
-                mac_digit(i, &mut res, &modulo.0, c1.0[i]);
-            }
+        for i in 0..2 {
+            mac_digit(i, &mut res, &modulo.0, c1.0[i]);
         }
 
         let mut carry = 0;
 
         debug_assert_eq!(res.len(), 4);
-        unroll! {
-            for i in 0..2 {
-                res[i] = adc(res[i], c0.0[i], &mut carry);
-            }
+        for i in 0..2 {
+            res[i] = adc(res[i], c0.0[i], &mut carry);
         }
 
-        unroll! {
-            for i in 0..2 {
-                let (a1, a0) = split_u128(res[i + 2]);
-                let (c, r0) = split_u128(a0 + carry);
-                let (c, r1) = split_u128(a1 + c);
-                carry = c;
+        for i in 0..2 {
+            let (a1, a0) = split_u128(res[i + 2]);
+            let (c, r0) = split_u128(a0 + carry);
+            let (c, r1) = split_u128(a1 + c);
+            carry = c;
 
-                res[i + 2] = combine_u128(r1, r0);
-            }
+            res[i + 2] = combine_u128(r1, r0);
         }
 
         debug_assert!(0 == carry);
@@ -450,20 +443,16 @@ fn mac_digit(from_index: usize, acc: &mut [u128; 4], b: &[u128; 2], c: u128) {
     let mut carry = 0;
 
     debug_assert_eq!(acc.len(), 4);
-    unroll! {
-        for i in 0..2 {
-            let a_index = i + from_index;
-            acc[a_index] = mac_with_carry(acc[a_index], b[i], c, &mut carry);
-        }
+    for i in 0..2 {
+        let a_index = i + from_index;
+        acc[a_index] = mac_with_carry(acc[a_index], b[i], c, &mut carry);
     }
-    unroll! {
-        for i in 0..2 {
-            let a_index = i + from_index + 2;
-            if a_index < 4 {
-                let (a, b) = acc[a_index].overflowing_add(carry);
-                acc[a_index] = a;
-                carry = b as u128;
-            }
+    for i in 0..2 {
+        let a_index = i + from_index + 2;
+        if a_index < 4 {
+            let (a, b) = acc[a_index].overflowing_add(carry);
+            acc[a_index] = a;
+            carry = b as u128;
         }
     }
 
@@ -477,17 +466,13 @@ fn mul_reduce(this: &mut [u128; 2], by: &[u128; 2], modulus: &[u128; 2], inv: u1
     // <http://cacr.uwaterloo.ca/hac/about/chap14.pdf>.
 
     let mut res = [0; 2 * 2];
-    unroll! {
-        for i in 0..2 {
-            mac_digit(i, &mut res, by, this[i]);
-        }
+    for i in 0..2 {
+        mac_digit(i, &mut res, by, this[i]);
     }
 
-    unroll! {
-        for i in 0..2 {
-            let k = inv.wrapping_mul(res[i]);
-            mac_digit(i, &mut res, modulus, k);
-        }
+    for i in 0..2 {
+        let k = inv.wrapping_mul(res[i]);
+        mac_digit(i, &mut res, modulus, k);
     }
 
     this.copy_from_slice(&res[2..]);

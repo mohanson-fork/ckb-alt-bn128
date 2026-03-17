@@ -16,7 +16,6 @@ codegen-units = 1
 debug = true
 
 [dependencies]
-crunchy = "0.2.1"
 
 [build-dependencies]
 cc = "1"
