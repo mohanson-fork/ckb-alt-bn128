@@ -4,6 +4,7 @@ use core::ops::{Add, Mul, Neg, Sub};
 
 unsafe extern "C" {
     unsafe fn ll_u256_mont_mul(ret: *mut u64, a: *const u64, b: *const u64, n: *const u64, k: u64);
+    unsafe fn ll_u256_mont_sqr(ret: *mut u64, a: *const u64, n: *const u64, k: u64);
 }
 
 macro_rules! field_impl {
@@ -95,6 +96,22 @@ macro_rules! field_impl {
             #[inline]
             fn one() -> Self {
                 $name(U256($one))
+            }
+
+            #[inline]
+            fn squared(&self) -> Self {
+                unsafe {
+                    let mut ret = [0u128; 2];
+                    let n: [u128; 2] = $modulus;
+                    let k: u128 = $inv;
+                    ll_u256_mont_sqr(
+                        &mut ret as *mut u128 as *mut u64,
+                        &self.0.0 as *const u128 as *const u64,
+                        &n as *const u128 as *const u64,
+                        k as u64,
+                    );
+                    $name(crate::arith::U256(ret))
+                }
             }
 
             #[inline]
