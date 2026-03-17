@@ -52,7 +52,26 @@ impl Fq2 {
     }
 
     pub fn mul_by_nonresidue(&self) -> Self {
-        *self * fq2_nonresidue()
+        // Do *self * fq2_nonresidue()
+        // The fq2_nonresidue() = 9 + u  (where u^2 = fq_non_residue in Fq)
+        // (a + b*u) * (9 + u) = (9a - b) + (a + 9b)*u
+        // Compute 9*x = 8*x + x using only field additions (no Montgomery mul)
+        let nine_c0 = {
+            let t = self.c0 + self.c0; // 2
+            let t = t + t; // 4
+            let t = t + t; // 8
+            t + self.c0 // 9
+        };
+        let nine_c1 = {
+            let t = self.c1 + self.c1; // 2
+            let t = t + t; // 4
+            let t = t + t; // 8
+            t + self.c1 // 9
+        };
+        Fq2 {
+            c0: nine_c0 - self.c1,
+            c1: self.c0 + nine_c1,
+        }
     }
 
     pub fn frobenius_map(&self, power: usize) -> Self {
