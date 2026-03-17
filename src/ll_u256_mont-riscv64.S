@@ -84,7 +84,6 @@ ll_u256_mont_mul:
     add acc3, acc3, cy0
     add acc3, acc3, s0
     sltu cy0, acc3, s0
-     sd acc0, 0(rd)       # r0
     add acc4, acc4, cy0
 
     # reduction
