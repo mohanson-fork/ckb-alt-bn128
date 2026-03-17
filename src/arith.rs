@@ -1,8 +1,6 @@
 use core::cmp::Ordering;
 use crunchy::unroll;
 
-use byteorder::{BigEndian, ByteOrder};
-
 /// 256-bit, stack allocated biginteger for use in prime field
 /// arithmetic.
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
@@ -87,10 +85,10 @@ impl U512 {
         }
 
         let mut n = [0; 4];
-        n[3] = BigEndian::read_u128(&s[0..]);
-        n[2] = BigEndian::read_u128(&s[16..]);
-        n[1] = BigEndian::read_u128(&s[32..]);
-        n[0] = BigEndian::read_u128(&s[48..]);
+        n[3] = u128::from_be_bytes(s[0..16].try_into().unwrap());
+        n[2] = u128::from_be_bytes(s[16..32].try_into().unwrap());
+        n[1] = u128::from_be_bytes(s[32..48].try_into().unwrap());
+        n[0] = u128::from_be_bytes(s[48..64].try_into().unwrap());
         Ok(U512(n))
     }
 
@@ -133,10 +131,10 @@ impl U512 {
 
     pub fn interpret(buf: &[u8; 64]) -> U512 {
         let mut n = [0; 4];
-        n[3] = BigEndian::read_u128(&buf[0..]);
-        n[2] = BigEndian::read_u128(&buf[16..]);
-        n[1] = BigEndian::read_u128(&buf[32..]);
-        n[0] = BigEndian::read_u128(&buf[48..]);
+        n[3] = u128::from_be_bytes(buf[0..16].try_into().unwrap());
+        n[2] = u128::from_be_bytes(buf[16..32].try_into().unwrap());
+        n[1] = u128::from_be_bytes(buf[32..48].try_into().unwrap());
+        n[0] = u128::from_be_bytes(buf[48..64].try_into().unwrap());
         U512(n)
     }
 }
@@ -197,8 +195,8 @@ impl U256 {
             });
         }
         let mut n = [0; 2];
-        n[1] = BigEndian::read_u128(&s[0..]);
-        n[0] = BigEndian::read_u128(&s[16..]);
+        n[1] = u128::from_be_bytes(s[0..16].try_into().unwrap());
+        n[0] = u128::from_be_bytes(s[16..32].try_into().unwrap());
         Ok(U256(n))
     }
 
@@ -209,8 +207,8 @@ impl U256 {
                 actual: s.len(),
             });
         }
-        BigEndian::write_u128(&mut s[0..], self.0[1]);
-        BigEndian::write_u128(&mut s[16..], self.0[0]);
+        s[0..16].copy_from_slice(&self.0[1].to_be_bytes());
+        s[16..32].copy_from_slice(&self.0[0].to_be_bytes());
         Ok(())
     }
 
