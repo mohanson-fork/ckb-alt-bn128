@@ -105,6 +105,8 @@ impl FieldElement for Fq2 {
     }
 }
 
+crate::fields::impl_field_assign_ops!(Fq2);
+
 impl Mul for Fq2 {
     type Output = Fq2;
 
