@@ -184,6 +184,8 @@ macro_rules! field_impl {
                 self
             }
         }
+
+        crate::fields::impl_field_assign_ops!($name);
     };
 }
 

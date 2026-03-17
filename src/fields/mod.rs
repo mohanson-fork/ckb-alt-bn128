@@ -6,7 +6,7 @@ mod fq6;
 use crate::arith::U256;
 use core::{
     fmt::Debug,
-    ops::{Add, Mul, Neg, Sub},
+    ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
 pub use self::fp::{Fq, Fr, const_fq};
@@ -22,6 +22,9 @@ pub trait FieldElement:
     + Sub<Output = Self>
     + Mul<Output = Self>
     + Neg<Output = Self>
+    + AddAssign
+    + SubAssign
+    + MulAssign
     + PartialEq
     + Eq
     + Debug
@@ -46,3 +49,27 @@ pub trait FieldElement:
         res
     }
 }
+
+macro_rules! impl_field_assign_ops {
+    ($t:ty) => {
+        impl core::ops::AddAssign for $t {
+            #[inline]
+            fn add_assign(&mut self, rhs: Self) {
+                *self = *self + rhs;
+            }
+        }
+        impl core::ops::SubAssign for $t {
+            #[inline]
+            fn sub_assign(&mut self, rhs: Self) {
+                *self = *self - rhs;
+            }
+        }
+        impl core::ops::MulAssign for $t {
+            #[inline]
+            fn mul_assign(&mut self, rhs: Self) {
+                *self = *self * rhs;
+            }
+        }
+    };
+}
+pub(crate) use impl_field_assign_ops;
