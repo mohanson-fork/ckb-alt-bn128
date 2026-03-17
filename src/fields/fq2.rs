@@ -1,4 +1,5 @@
 use crate::arith::{U256, U512};
+use crate::fields::fp::{FQ, FQ_MINUS1_DIV2, FQ_MINUS3_DIV4};
 use crate::fields::{FieldElement, Fq};
 use core::ops::{Add, Mul, Neg, Sub};
 
@@ -158,35 +159,16 @@ impl Neg for Fq2 {
     }
 }
 
-lazy_static::lazy_static! {
-    static ref FQ: U256 = U256::from([
-        0x3c208c16d87cfd47,
-        0x97816a916871ca8d,
-        0xb85045b68181585d,
-        0x30644e72e131a029
-    ]);
-
-    static ref FQ_MINUS3_DIV4: Fq =
-        Fq::new(3.into()).expect("3 is a valid field element and static; qed").neg() *
-        Fq::new(4.into()).expect("4 is a valid field element and static; qed").inverse()
-        .expect("4 has inverse in Fq and is static; qed");
-
-    static ref FQ_MINUS1_DIV2: Fq =
-        Fq::new(1.into()).expect("1 is a valid field element and static; qed").neg() *
-        Fq::new(2.into()).expect("2 is a valid field element and static; qed").inverse()
-            .expect("2 has inverse in Fq and is static; qed");
-}
-
 impl Fq2 {
     pub fn i() -> Fq2 {
         Fq2::new(Fq::zero(), Fq::one())
     }
 
     pub fn sqrt(&self) -> Option<Self> {
-        let a1 = self.pow::<U256>((*FQ_MINUS3_DIV4).into());
+        let a1 = self.pow::<U256>((FQ_MINUS3_DIV4).into());
         let a1a = a1 * *self;
         let alpha = a1 * a1a;
-        let a0 = alpha.pow(*FQ) * alpha;
+        let a0 = alpha.pow(FQ) * alpha;
 
         if a0 == Fq2::one().neg() {
             return None;
@@ -195,7 +177,7 @@ impl Fq2 {
         if alpha == Fq2::one().neg() {
             Some(Self::i() * a1a)
         } else {
-            let b = (alpha + Fq2::one()).pow::<U256>((*FQ_MINUS1_DIV2).into());
+            let b = (alpha + Fq2::one()).pow::<U256>((FQ_MINUS1_DIV2).into());
             Some(b * a1a)
         }
     }
