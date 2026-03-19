@@ -367,6 +367,27 @@ impl<P: GroupParams> Sub<G<P>> for G<P> {
     }
 }
 
+impl<P: GroupParams> core::ops::AddAssign for G<P> {
+    #[inline]
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
+    }
+}
+
+impl<P: GroupParams> core::ops::SubAssign for G<P> {
+    #[inline]
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
+    }
+}
+
+impl<P: GroupParams> core::ops::MulAssign<Fr> for G<P> {
+    #[inline]
+    fn mul_assign(&mut self, rhs: Fr) {
+        *self = *self * rhs;
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct G1Params;
 

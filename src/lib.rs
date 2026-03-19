@@ -92,6 +92,27 @@ impl Mul for Fr {
     }
 }
 
+impl core::ops::AddAssign for Fr {
+    #[inline]
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
+    }
+}
+
+impl core::ops::SubAssign for Fr {
+    #[inline]
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
+    }
+}
+
+impl core::ops::MulAssign for Fr {
+    #[inline]
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = *self * rhs;
+    }
+}
+
 #[derive(Debug)]
 pub enum FieldError {
     InvalidSliceLength,
