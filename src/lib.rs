@@ -366,6 +366,10 @@ impl G1 {
         Fq(G1Params::coeff_b())
     }
 
+    pub fn double(&self) -> Self {
+        G1(self.0.double())
+    }
+
     pub fn from_compressed(bytes: &[u8]) -> Result<Self, CurveError> {
         if bytes.len() != 33 {
             return Err(CurveError::InvalidEncoding);
