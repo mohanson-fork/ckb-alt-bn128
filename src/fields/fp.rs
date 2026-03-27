@@ -2,11 +2,6 @@ use crate::arith::{U256, U512};
 use crate::fields::FieldElement;
 use core::ops::{Add, Mul, Neg, Sub};
 
-unsafe extern "C" {
-    unsafe fn ll_u256_mont_mul(ret: *mut u64, a: *const u64, b: *const u64, n: *const u64, k: u64);
-    unsafe fn ll_u256_mont_sqr(ret: *mut u64, a: *const u64, n: *const u64, k: u64);
-}
-
 macro_rules! field_impl {
     ($name:ident, $modulus:expr, $rsquared:expr, $rcubed:expr, $one:expr, $inv:expr) => {
         #[derive(Copy, Clone, Default, PartialEq, Eq, Debug)]
@@ -99,22 +94,6 @@ macro_rules! field_impl {
             }
 
             #[inline]
-            fn squared(&self) -> Self {
-                unsafe {
-                    let mut ret = [0u128; 2];
-                    let n: [u128; 2] = $modulus;
-                    let k: u128 = $inv;
-                    ll_u256_mont_sqr(
-                        &mut ret as *mut u128 as *mut u64,
-                        &self.0.0 as *const u128 as *const u64,
-                        &n as *const u128 as *const u64,
-                        k as u64,
-                    );
-                    $name(crate::arith::U256(ret))
-                }
-            }
-
-            #[inline]
             fn is_zero(&self) -> bool {
                 self.0.is_zero()
             }
@@ -158,20 +137,9 @@ macro_rules! field_impl {
 
             #[inline]
             fn mul(mut self, other: $name) -> $name {
-                unsafe {
-                    let mut ret = [0u128; 2];
-                    let n: [u128; 2] = $modulus;
-                    let k: u128 = $inv;
-                    ll_u256_mont_mul(
-                        &mut ret as *mut u128 as *mut u64,
-                        &self.0.0 as *const u128 as *const u64,
-                        &other.0.0 as *const u128 as *const u64,
-                        &n as *const u128 as *const u64,
-                        k as u64,
-                    );
-                    self.0.0 = ret;
-                    self
-                }
+                self.0.mul(&other.0, &U256($modulus), $inv);
+
+                self
             }
         }
 

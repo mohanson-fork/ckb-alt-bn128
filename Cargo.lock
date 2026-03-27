@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ckb-alt-bn128"
+name = "ckb-alt-bn128-compatible"
 version = "0.1.6"
 dependencies = [
  "cc",
